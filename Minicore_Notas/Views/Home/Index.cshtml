@@ -1,0 +1,262 @@
+﻿@model Minicore_Notas.Models.ViewModel.GradeVM
+
+<div style="border: solid 1px #d3d3d3; background-color: #fefefe; height: 200px;">
+    <div class="input-group">
+
+        <div class="container mt-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    MiniCore
+                </div>
+                <div class="card-body">
+                    <form asp-action="DefineRange" class="row">
+                        <div class="col-5">
+                            <div class="form-group">
+                                <label asp-for="Start" class="control-label">Fecha Inicio</label>
+                                <input type="date" asp-for="Start" class="form-control" />
+                                <span asp-validation-for="Start" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-5">
+                            <div class="form-group">
+                                <label asp-for="End" class="control-label">Fecha Fin</label>
+                                <input type="date" asp-for="End" class="form-control" />
+                                <span asp-validation-for="End" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-2 md-4 mt-md-0">
+                            <button type="submit" class="btn btn-primary">Buscar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- TABLA DE REGISTROS -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    Registros
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Estudiante</th>
+                                <th>P1</th>
+                                <th>P2</th>
+                                <th>P3</th>
+                                <th>Promedio</th>
+                                <th>Mensaje</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.StudentsList)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Id) - @Html.DisplayFor(modelItem => item.Name)
+                                    </td>
+                                    <td>
+                                        
+                                        @Html.DisplayFor(modelItem => Model.Promedios[item.Id][0])
+                                        
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => Model.Promedios[item.Id][1])
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => Model.Promedios[item.Id][2])
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => Model.Promedios[item.Id][3])
+                                    </td>
+                                    <td>
+                                        Debe sacar @Html.DisplayFor(modelItem => Model.Promedios[item.Id][4]) en P3 para aprobar.
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+<div style="display: flex; flex-direction: column; gap: 20px; padding: 10px;">
+    <div style="display: flex; justify-content: space-between; gap: 10px;">
+        @*ESTUDIANTES*@
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    Estudiantes
+                </div>
+                <div class="card-body">
+                    <form asp-action="CreateStudent" class="form-inline mb-3">
+                        <div class="row">
+                            <div class="col">
+                                <input asp-for="Student.Name" class="form-control mb-2" placeholder="Nombre del Estudiante" />
+                                <span asp-validation-for="Student.Name" class="text-danger"></span>
+                            </div>
+                                <div class="col">
+                                    <button type="submit" class="btn btn-primary mb-1">Crear</button>
+                            </div>
+                        </div>
+                    </form>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.StudentsList)
+                            {
+                                <tr onclick="window.location.href = '@Url.Action("Edit", "Students", new { id = item.Id })';return false;">
+                                    <td >@Html.DisplayFor(modelItem => item.Id)</td>
+                                    <td class="btn">@Html.DisplayFor(modelItem => item.Name)</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        @*NOTAS*@
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    Calificaciones
+                </div>
+                <div class="card-body">
+                    <form asp-action="CreateGrade" class="mb-3">
+                        <div class="form-row">
+                            <div class="col">
+                                <input asp-for="Grade.Name" class="form-control" placeholder="Nombre de la Tarea" />
+                                <span asp-validation-for="Grade.Name" class="text-danger"></span>
+                            </div>
+                            <div class="col">
+                                <input asp-for="Grade.GradeValue" class="form-control" placeholder="Valor" />
+                                <span asp-validation-for="Grade.GradeValue" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group mt-2">
+                            <input asp-for="Grade.Date" class="form-control" type="date" />
+                            <span asp-validation-for="Grade.Date" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col">
+                                    <select asp-for="Grade.StudentId" class="form-control" asp-items="ViewBag.StudentId"></select>
+                                    <span asp-validation-for="Grade.StudentId" class="text-danger"></span>
+                                </div>
+                                <div class="col">
+                                    <button type="submit" class="btn btn-primary">Crear</button>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        
+                    </form>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Valor</th>
+                                <th>Fecha</th>
+                                <th>Estudiante</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.GradesList)
+                            {
+                                // each row can be clicked to open the edit action "EditGrade" from the controller "GradesController"
+                                <tr  onclick="window.location.href = '@Url.Action("Edit", "Grades", new { id = item.Id })';return false;">
+                                    <td class="btn">@Html.DisplayFor(modelItem => item.Name)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.GradeValue)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Date)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Student.Name)</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        @*PROGRESOS*@ @*ESTA OCULTO*@
+        <borrador>
+        @*
+        <div style="border: solid 1px #d3d3d3; background-color: #d1ecf1; width: 30%; ">
+            <h2>Progresos</h2>
+            <div class="input-group">
+                <form asp-action="CreateGrade">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="form-group">
+                        <label asp-for="Period.Start" class="control-label"></label>
+                        <input asp-for="Period.Start" class="form-control" />
+                        <span asp-validation-for="Period.Start" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Period.End" class="control-label"></label>
+                        <input asp-for="Period.End" class="form-control" />
+                        <span asp-validation-for="Period.End" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Period.Weigh" class="control-label"></label>
+                        <input asp-for="Period.Weigh" class="form-control" />
+                        <span asp-validation-for="Period.Weigh" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <input type="submit" value="Create" class="btn btn-primary" />
+                    </div>
+                </form>
+            </div>
+            @*TABLA DE PROGRESOS*@@*
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Period.Start)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Period.End)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Period.Weigh)
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.PeriodsList)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Start)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.End)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Weigh)
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            *@
+        </borrador>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
+
